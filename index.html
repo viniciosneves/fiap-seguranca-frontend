@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Desenvolvimento seguro no frontend — Início</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <span class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </span>
+        <span class="text-xs text-slate-400 hidden sm:inline">
+          Aperte <kbd class="px-1.5 py-0.5 rounded border border-slate-600 bg-slate-800 text-[10px]">Enter</kbd> para começar
+        </span>
+      </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center px-4">
+      <div id="playground" class="relative w-full max-w-2xl h-[260px] rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 overflow-hidden shadow-xl">
+        <div class="absolute inset-0 pointer-events-none">
+          <div class="absolute -top-10 -left-10 h-40 w-40 rounded-full bg-sky-500/20 blur-3xl"></div>
+          <div class="absolute -bottom-10 -right-10 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10 h-full flex flex-col items-center justify-center gap-4 text-center px-6">
+          <p class="text-xs uppercase tracking-[0.2em] text-sky-400/80">
+            workshop interativo
+          </p>
+          <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
+            Desenvolvimento seguro no frontend
+          </h1>
+          <p class="max-w-md text-sm sm:text-base text-slate-300">
+            Você tem duas opções:
+            <span class="font-semibold text-sky-300">perseguir o botão fujão com o mouse</span>
+            ou simplesmente apertar <span class="font-semibold">Enter</span> como uma pessoa sensata.
+          </p>
+
+          <button
+            id="start-button"
+            type="button"
+            class="mt-4 inline-flex items-center gap-2 rounded-full bg-sky-500 px-6 py-2.5 text-sm font-semibold text-slate-950 shadow-lg shadow-sky-500/30 hover:bg-sky-400 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+          >
+            🚀 Iniciar aula
+          </button>
+
+        </div>
+      </div>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Pressione Enter para ir para o slide 01 — Vinicios Neves
+    </footer>
+  </div>
+
+  <script>
+    const button = document.getElementById('start-button');
+    const playground = document.getElementById('playground');
+
+    function irParaPrimeiroSlide() {
+      window.location.href = '001.html';
+    }
+
+    // Navegação via Enter em qualquer lugar da página
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        irParaPrimeiroSlide();
+      }
+    });
+
+    // Também navega se conseguir clicar (por teclado/touch)
+    button.addEventListener('click', irParaPrimeiroSlide);
+
+    console.log('Dica: Enter funciona mesmo quando o botão está fugindo.');
+
+    // Zoando com o mouse: quando o ponteiro chega perto, o botão muda de lugar
+    function moverBotaoRandomicamente() {
+      const playgroundRect = playground.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+
+      // Posição atual do botão relativa ao playground
+      const currentLeft = buttonRect.left - playgroundRect.left;
+      const currentTop = buttonRect.top - playgroundRect.top;
+      const currentCenterX = currentLeft + buttonRect.width / 2;
+      const currentCenterY = currentTop + buttonRect.height / 2;
+
+      // Garante que o botão fique totalmente visível dentro do playground
+      const maxLeft = playgroundRect.width - buttonRect.width - 24;
+      const maxTop = playgroundRect.height - buttonRect.height - 24;
+
+      let left = currentLeft;
+      let top = currentTop;
+
+      // Tenta algumas vezes até o botão se mover o suficiente
+      const MIN_DISTANCE = 80; // px
+      for (let i = 0; i < 10; i++) {
+        const candidateLeft = 12 + Math.random() * Math.max(maxLeft, 0);
+        const candidateTop = 12 + Math.random() * Math.max(maxTop, 0);
+
+        const candidateCenterX = candidateLeft + buttonRect.width / 2;
+        const candidateCenterY = candidateTop + buttonRect.height / 2;
+
+        const dx = candidateCenterX - currentCenterX;
+        const dy = candidateCenterY - currentCenterY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance >= MIN_DISTANCE) {
+          left = candidateLeft;
+          top = candidateTop;
+          break;
+        }
+      }
+
+      button.style.position = 'absolute';
+      button.style.left = left + 'px';
+      button.style.top = top + 'px';
+      button.style.transition = 'left 0.15s ease-out, top 0.15s ease-out';
+    }
+
+    button.addEventListener('mouseenter', () => {
+      // Só faz a zoeira para quem está com mouse; teclado continua usável
+      if (matchMedia('(pointer:fine)').matches) {
+        moverBotaoRandomicamente();
+      }
+    });
+  </script>
+</body>
+</html>
+
+

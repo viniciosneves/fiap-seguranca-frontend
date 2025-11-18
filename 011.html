@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Conclusão e recursos</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="010.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">11</a>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-slate-800 text-slate-500 cursor-not-allowed">
+            Próximo ▶
+          </span>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-6">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            🎯 Conclusão: Segurança é Responsabilidade Compartilhada
+          </h1>
+        </header>
+
+        <div id="conclusion-demo" class="text-sm sm:text-base"></div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script>
+    const principios = [
+      {
+        emoji: '🔒',
+        titulo: 'Frontend não é seguro por padrão',
+        descricao: 'Tudo que roda no cliente pode ser inspecionado e modificado',
+        exemplo: 'DevTools, Postman, curl - atacantes têm acesso total ao código'
+      },
+      {
+        emoji: '🛡️',
+        titulo: 'Defesa em profundidade',
+        descricao: 'Múltiplas camadas de proteção',
+        exemplo: 'Frontend valida UX + Backend valida segurança + Rate limiting + WAF'
+      },
+      {
+        emoji: '🔐',
+        titulo: 'Zero Trust',
+        descricao: 'Nunca confie, sempre valide',
+        exemplo: 'Valide cada request no backend, mesmo que o frontend já validou'
+      },
+      {
+        emoji: '📦',
+        titulo: 'Supply Chain',
+        descricao: 'Suas dependências são parte da sua aplicação',
+        exemplo: 'npm audit, Dependabot, revisão de updates'
+      },
+      {
+        emoji: '🔄',
+        titulo: 'Segurança é contínua',
+        descricao: 'Não é um checklist único, é um processo',
+        exemplo: 'Auditorias regulares, updates, monitoramento, aprendizado'
+      }
+    ];
+    
+    const recursos = [
+      {
+        categoria: '📚 Documentação e Guias',
+        links: [
+          { nome: 'OWASP Top 10', url: 'https://owasp.org/Top10/' },
+          { nome: 'OWASP Cheat Sheet Series', url: 'https://cheatsheetseries.owasp.org/' },
+          { nome: 'MDN Web Security', url: 'https://developer.mozilla.org/en-US/docs/Web/Security' },
+          { nome: 'web.dev Security', url: 'https://web.dev/secure/' }
+        ]
+      },
+      {
+        categoria: '🛠️ Ferramentas',
+        links: [
+          { nome: 'DOMPurify', url: 'https://github.com/cure53/DOMPurify' },
+          { nome: 'helmet.js', url: 'https://helmetjs.github.io/' },
+          { nome: 'Snyk', url: 'https://snyk.io/' },
+          { nome: 'npm audit', url: 'https://docs.npmjs.com/cli/v8/commands/npm-audit' }
+        ]
+      },
+      {
+        categoria: '🎓 Aprendizado',
+        links: [
+          { nome: 'PortSwigger Web Security Academy', url: 'https://portswigger.net/web-security' },
+          { nome: 'HackTheBox', url: 'https://www.hackthebox.com/' },
+          { nome: 'OWASP WebGoat', url: 'https://owasp.org/www-project-webgoat/' }
+        ]
+      }
+    ];
+    
+    function renderPrincipios() {
+      return principios.map(p => `
+        <div style="background: #020617; padding: 18px 20px; border-radius: 12px; margin: 14px 0; border: 1px solid #1f2937;">
+          <h3 style="margin-top: 0; color: #e5e7eb; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 2em;">${p.emoji}</span>
+            ${p.titulo}
+          </h3>
+          <p style="color: #e5e7eb; font-size: 1.05em; margin: 8px 0 6px;">
+            <strong>${p.descricao}</strong>
+          </p>
+          <p style="color: #cbd5f5; font-size: 0.95em; background: #020617; padding: 9px 10px; border-radius: 6px; margin-top: 8px; border: 1px solid rgba(148,163,184,0.45);">
+            💡 ${p.exemplo}
+          </p>
+        </div>
+      `).join('');
+    }
+    
+    function renderRecursos() {
+      return recursos.map(r => `
+        <div style="background: #2d2d2d; color: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+          <h3 style="margin-top: 0; color: #6fbf73;">${r.categoria}</h3>
+          <ul style="list-style: none; padding: 0;">
+            ${r.links.map(link => `
+              <li style="margin: 10px 0;">
+                <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
+                   style="color: #64b5f6; text-decoration: none; font-size: 1.05em;">
+                  🔗 ${link.nome}
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+    
+    function renderQuickWins() {
+      return `
+        <div style="background: linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%); color: white; padding: 25px; border-radius: 10px; margin: 20px 0;">
+          <h3 style="margin-top: 0;">⚡ Quick Wins - Implemente Hoje</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 20px;">
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+              <h4 style="margin-top: 0;">1️⃣ npm audit</h4>
+              <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 3px; display: block;">
+                npm audit fix
+              </code>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+              <h4 style="margin-top: 0;">2️⃣ HttpOnly Cookies</h4>
+              <p style="font-size: 0.9em; margin: 5px 0;">
+                Migre tokens do localStorage para cookies HttpOnly
+              </p>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+              <h4 style="margin-top: 0;">3️⃣ Helmet.js</h4>
+              <code style="background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 3px; display: block;">
+                npm i helmet
+              </code>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+              <h4 style="margin-top: 0;">4️⃣ DOMPurify</h4>
+              <p style="font-size: 0.9em; margin: 5px 0;">
+                Sanitize qualquer HTML de usuário
+              </p>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+              <h4 style="margin-top: 0;">5️⃣ Rate Limiting</h4>
+              <p style="font-size: 0.9em; margin: 5px 0;">
+                Proteja endpoints de login/register
+              </p>
+            </div>
+            <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px;">
+              <h4 style="margin-top: 0;">6️⃣ Dependabot</h4>
+              <p style="font-size: 0.9em; margin: 5px 0;">
+                Ative no GitHub (Settings → Security)
+              </p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    function renderMensagemFinal() {
+      return `
+        <div style="background: #155724; color: white; padding: 30px; border-radius: 10px; margin: 20px 0; text-align: center;">
+          <h2 style="margin-top: 0; font-size: 2em;">🌟 Lembre-se</h2>
+          <p style="font-size: 1.3em; line-height: 1.6; margin: 20px 0;">
+            <em>"Segurança não é um feature que você adiciona no final.<br>
+            É uma mentalidade que você cultiva desde o primeiro commit."</em>
+          </p>
+          <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 8px; margin-top: 20px;">
+            <p style="font-size: 1.1em; margin: 10px 0;">
+              ✅ Frontend: UX, validação visual, performance<br>
+              ✅ Backend: Segurança, validação real, autorização<br>
+              ✅ DevOps: Monitoramento, logs, rate limiting<br>
+              ✅ Time: Code review, threat modeling, cultura de segurança
+            </p>
+          </div>
+          <p style="margin-top: 25px; font-size: 1.2em;">
+            💤 Escreva código que não tira seu sono depois do deploy!
+          </p>
+        </div>
+      `;
+    }
+    
+    // Renderizar tudo
+    const demo = document.getElementById('conclusion-demo');
+    demo.innerHTML = `
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <div style="background: #020617; padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #1f2937;">
+          <h2 style="color: #e5e7eb; margin-top: 0;">🔑 Princípios Fundamentais</h2>
+          ${renderPrincipios()}
+        </div>
+        
+        ${renderQuickWins()}
+        
+        <div style="margin: 30px 0;">
+          <h2 style="color: #e5e7eb;">📖 Recursos para Continuar Aprendendo</h2>
+          ${renderRecursos()}
+        </div>
+        
+        ${renderMensagemFinal()}
+        
+        <div style="text-align: center; padding: 30px; background: #020617; border-radius: 10px; margin-top: 30px; border: 1px solid #1f2937;">
+          <h2 style="color: #e5e7eb;">Obrigado! 🙏</h2>
+          <p style="font-size: 1.2em; color: #e5e7eb;">
+            Perguntas? Vamos conversar sobre segurança!
+          </p>
+          <div style="margin-top: 20px;">
+            <p style="color: #60a5fa; font-size: 1.1em;">
+              <strong>Vinicios Neves</strong>
+            </p>
+            <p style="color: #e5e7eb;">
+              Tech Lead @ ustwo | Instrutor @ Alura | Professor @ FIAP
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  </script>
+</body>
+</html>
+

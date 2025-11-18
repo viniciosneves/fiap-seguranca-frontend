@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>XSS (Cross-Site Scripting: injeção de JavaScript no navegador)</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="003.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+          </div>
+          <a href="005.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+            Próximo ▶
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            XSS: exemplo clássico no frontend (React)
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Renderizando HTML vindo do usuário sem nenhum cuidado.
+          </p>
+        </header>
+
+        <section class="space-y-4">
+          <div id="vulnerable-comment" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base"></div>
+          <button onclick="demonstrarXSS()"
+                  class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-rose-400 cursor-pointer">
+            🚨 Demonstrar ataque XSS
+          </button>
+        </section>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script>
+    function renderizarComentario(html) {
+      const container = document.getElementById('vulnerable-comment');
+      container.innerHTML = html;
+    }
+    
+    const htmlMalicioso = `
+<div>
+  <p>Comentário do usuário:</p>
+  <img src="x" onerror="alert('XSS rodando no navegador do usuário!')" />
+</div>
+    `;
+    
+    function simularFetchComentario() {
+      const respostaDoServidor = {
+        comentarioHtml: htmlMalicioso
+      };
+
+      debugger; // ponto para interceptar e alterar o "retorno do servidor" no DevTools
+
+      return Promise.resolve(respostaDoServidor);
+    }
+
+    const codigoReactVulneravel = `
+function Comment({ html }) {
+  return (
+    &lt;div dangerouslySetInnerHTML={{ __html: html }} /&gt;
+  )
+}
+
+const html = '&lt;img src="x" onerror="alert(\\\\'XSS\\\\')"/&gt;';
+    `;
+    
+    async function demonstrarXSS() {
+      const resposta = await simularFetchComentario();
+      renderizarComentario(resposta.comentarioHtml);
+    }
+    
+    const containerInicial = document.getElementById('vulnerable-comment');
+    const htmlInicial = `
+<div>
+  <p><strong>🚨 Código vulnerável (React):</strong></p>
+  <pre>${codigoReactVulneravel}</pre>
+  <p>
+    ⚠️ Durante a aula, clique no botão acima. O código vai fazer um "fetch" simulado,
+    parar no <code>debugger</code> e você pode alterar o HTML que "veio do servidor"
+    antes de ele ser renderizado.
+  </p>
+</div>
+    `;
+    containerInicial.innerHTML = htmlInicial;
+  </script>
+  
+  <p>Resumo: qualquer lugar que recebe HTML cru é candidato a XSS.</p>
+</body>
+</html>

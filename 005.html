@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>XSS: abordagem mais segura</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="004.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+          </div>
+          <a href="006.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+            Próximo ▶
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            XSS: como fazer melhor
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Primeiro passo: tratar tudo como texto, não como HTML.
+          </p>
+        </header>
+
+        <section class="space-y-4">
+          <div id="safe-example" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base"></div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="demonstrarFormaSegura()"
+                    class="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-emerald-400 cursor-pointer">
+              ✅ Demonstrar forma segura
+            </button>
+            <button onclick="demonstrarComDOMPurify()"
+                    class="inline-flex items-center gap-2 rounded-full bg-sky-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-sky-400 cursor-pointer">
+              🛡️ Demonstrar com DOMPurify
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+  <script>
+    function renderCommentAsText(text) {
+      console.log('[renderCommentAsText] chamado com:', text);
+
+      const container = document.getElementById('safe-example');
+      console.log('[renderCommentAsText] container encontrado:', container);
+
+      const p = document.createElement('p');
+      p.textContent = text;
+      p.style.padding = '10px';
+      p.style.background = '#e6ffe6';
+      p.style.border = '2px solid green';
+      p.style.borderRadius = '5px';
+      p.style.color = '#111827';
+
+      console.log('[renderCommentAsText] elemento <p> montado:', p);
+      container.appendChild(p);
+      console.log('[renderCommentAsText] comentário adicionado ao DOM');
+    }
+
+    function renderCommentWithDOMPurify(html) {
+      console.log('[renderCommentWithDOMPurify] chamado com HTML:', html);
+
+      const container = document.getElementById('safe-example');
+      console.log('[renderCommentWithDOMPurify] container encontrado:', container);
+
+      const safeHtml = DOMPurify.sanitize(html);
+      console.log('[renderCommentWithDOMPurify] HTML sanitizado pelo DOMPurify:', safeHtml);
+
+      const div = document.createElement('div');
+      div.innerHTML = safeHtml;
+      div.style.padding = '10px';
+      div.style.background = '#e6f3ff';
+      div.style.border = '2px solid blue';
+      div.style.borderRadius = '5px';
+      div.style.marginTop = '10px';
+       div.style.color = '#111827';
+
+      console.log('[renderCommentWithDOMPurify] elemento <div> montado:', div);
+      container.appendChild(div);
+      console.log('[renderCommentWithDOMPurify] comentário sanitizado adicionado ao DOM');
+    }
+
+    function demonstrarFormaSegura() {
+      console.log('[demonstrarFormaSegura] botão clicado');
+
+      document.getElementById('safe-example').innerHTML = '';
+      console.log('[demonstrarFormaSegura] container limpo');
+
+      const textoComScript = '<img src="x" onerror="alert(\'XSS\')" /> Comentário malicioso';
+      console.log('[demonstrarFormaSegura] texto malicioso definido:', textoComScript);
+
+      renderCommentAsText(textoComScript);
+      console.log('[demonstrarFormaSegura] renderCommentAsText executado');
+
+      const info = document.createElement('p');
+      info.innerHTML = '✅ O código malicioso foi <strong>escapado</strong> e renderizado como texto puro!';
+      info.style.color = 'green';
+      document.getElementById('safe-example').appendChild(info);
+      console.log('[demonstrarFormaSegura] mensagem informativa adicionada');
+    }
+
+    function demonstrarComDOMPurify() {
+      console.log('[demonstrarComDOMPurify] botão clicado');
+
+      document.getElementById('safe-example').innerHTML = '';
+      console.log('[demonstrarComDOMPurify] container limpo');
+
+      const htmlMalicioso = `
+        <p>Comentário com <strong>formatação</strong> e <em>estilo</em></p>
+        <img src="x" onerror="alert('XSS')" />
+        <script>alert('XSS')<\/script>
+      `;
+      console.log('[demonstrarComDOMPurify] HTML malicioso definido:', htmlMalicioso);
+
+      renderCommentWithDOMPurify(htmlMalicioso);
+      console.log('[demonstrarComDOMPurify] renderCommentWithDOMPurify executado');
+
+      const info = document.createElement('p');
+      info.innerHTML = '🛡️ DOMPurify <strong>removeu</strong> os scripts maliciosos mas manteve a formatação segura!';
+      info.style.color = 'blue';
+      info.style.marginTop = '10px';
+      document.getElementById('safe-example').appendChild(info);
+      console.log('[demonstrarComDOMPurify] mensagem informativa adicionada');
+    }
+
+    console.log('[005] inicializando exemplo seguro de XSS');
+
+    document.getElementById('safe-example').innerHTML = `
+      <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; color: #111827;">
+        <p><strong>Código React seguro:</strong></p>
+        <pre style="background: white; padding: 10px; overflow-x: auto;">
+        // ✅ Forma segura: texto puro
+        function Comment({ text }) {
+          return &lt;p&gt;{text}&lt;/p&gt;
+        }
+
+        // ✅ Se precisar de HTML: usar DOMPurify
+        function CommentHtml({ html }) {
+          const safeHtml = DOMPurify.sanitize(html);
+          return &lt;div dangerouslySetInnerHTML={{ __html: safeHtml }} /&gt;
+        }</pre>
+      </div>
+    `;
+  </script>
+
+  <p>Ideia para falar: "dangerously" não é enfeite, é um aviso mesmo.</p>
+</body>
+
+</html>

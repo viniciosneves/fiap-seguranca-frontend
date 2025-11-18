@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Segredos no frontend</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="005.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+          </div>
+          <a href="007.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+            Próximo ▶
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            Segredos no frontend: não existe segredo no bundle
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Qualquer coisa que vai para o browser pode ser vista.
+          </p>
+        </header>
+
+        <section class="space-y-4">
+          <div id="secrets-demo" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base"></div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="demonstrarProblema()"
+                    class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-rose-400 cursor-pointer">
+              🚨 Ver problema
+            </button>
+            <button onclick="demonstrarSolucao()"
+                    class="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-emerald-400 cursor-pointer">
+              ✅ Ver solução
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script>
+    // 🚨 PROBLEMA: Segredo exposto no código
+    const STRIPE_SECRET_KEY = "sk_live_123ABC456DEF789"; // ⚠️ NUNCA FAÇA ISSO!
+    const OPENAI_API_KEY = "sk-proj-xyz123..."; // ⚠️ NUNCA FAÇA ISSO!
+    
+    // Função insegura que expõe a chave
+    async function checkoutInseguro() {
+      try {
+        const response = await fetch("https://api.stripe.com/v1/charges", {
+          headers: {
+            Authorization: `Bearer ${STRIPE_SECRET_KEY}`, // 🚨 Exposto!
+          },
+        });
+        return response.json();
+      } catch (error) {
+        console.error('Erro:', error);
+      }
+    }
+    
+    // ✅ SOLUÇÃO: Frontend fala com seu próprio backend
+    async function checkoutSeguro(items) {
+      try {
+        const response = await fetch("/api/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ items }),
+          credentials: "include", // Envia cookies
+        });
+        return response.json();
+      } catch (error) {
+        console.error('Erro:', error);
+      }
+    }
+    
+    function demonstrarProblema() {
+      const demo = document.getElementById('secrets-demo');
+      demo.innerHTML = `
+        <div style="background: #ffe6e6; padding: 20px; border-radius: 5px; border: 2px solid red; color: #111827;">
+          <h3>🚨 Código Inseguro:</h3>
+          <pre style="background: white; padding: 15px; overflow-x: auto;">
+const STRIPE_SECRET_KEY = "${STRIPE_SECRET_KEY}";
+
+fetch("https://api.stripe.com/...", {
+  headers: {
+    Authorization: \`Bearer \${STRIPE_SECRET_KEY}\`,
+  },
+});</pre>
+          <p style="color: red; font-weight: bold;">
+            ⚠️ Esta chave está EXPOSTA no bundle JavaScript!
+          </p>
+          <p>Abra o DevTools (F12) e digite no console:</p>
+          <code style="background: white; padding: 5px; display: block; margin-top: 10px;">
+            STRIPE_SECRET_KEY
+          </code>
+          <p style="margin-top: 10px;">
+            Resultado: <strong>${STRIPE_SECRET_KEY}</strong> 😱
+          </p>
+        </div>
+      `;
+    }
+    
+    function demonstrarSolucao() {
+      const demo = document.getElementById('secrets-demo');
+      demo.innerHTML = `
+        <div style="background: #e6ffe6; padding: 20px; border-radius: 5px; border: 2px solid green; color: #111827;">
+          <h3>✅ Código Seguro:</h3>
+          <pre style="background: white; padding: 15px; overflow-x: auto;">
+// Frontend
+fetch("/api/checkout", {
+  method: "POST",
+  body: JSON.stringify({ items }),
+  credentials: "include"
+});
+
+// Backend (Node.js/Express)
+app.post("/api/checkout", async (req, res) => {
+  const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;
+  
+  const charge = await stripe.charges.create({
+    amount: calculateTotal(req.body.items),
+    currency: "usd",
+  }, {
+    apiKey: STRIPE_SECRET // ✅ Seguro no servidor!
+  });
+  
+  res.json({ success: true });
+});</pre>
+          <p style="color: green; font-weight: bold;">
+            ✅ A chave secreta fica APENAS no backend!
+          </p>
+          <p style="margin-top: 15px;">
+            <strong>Arquitetura correta:</strong><br>
+            Browser → Seu Backend/BFF → API Externa<br>
+            <span style="font-size: 0.9em; color: #1f2933;">
+              (O backend gerencia as secrets usando variáveis de ambiente)
+            </span>
+          </p>
+        </div>
+      `;
+    }
+    
+    // Exibir exemplo inicial
+    document.getElementById('secrets-demo').innerHTML = `
+      <div style="background: #f0f0f0; padding: 20px; border-radius: 5px; color: #111827;">
+        <h3 style="margin-top: 0;">💡 Demonstração Interativa</h3>
+        <p><strong>Clique nos botões acima para explorar:</strong></p>
+        <ul style="line-height: 1.8;">
+          <li>🚨 Como secrets vazam no bundle JavaScript</li>
+          <li>✅ Como proteger usando BFF (Backend For Frontend)</li>
+        </ul>
+        <p style="margin-top: 15px; background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid orange;">
+          <strong>Lembre-se:</strong> Se está no bundle, não é secreto!
+        </p>
+      </div>
+    `;
+    
+    // Tornando acessível no console para demonstração
+    window.STRIPE_SECRET_KEY = STRIPE_SECRET_KEY;
+  </script>
+</body>
+</html>

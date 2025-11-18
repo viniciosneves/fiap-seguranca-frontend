@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Frontend como frente de batalha</title>
+</head>
+
+<body class="min-h-screen bg-slate-950 text-slate-100">
+    <div class="min-h-screen flex flex-col">
+        <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+            <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+                <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+                    Desenvolvimento seguro no frontend
+                </a>
+                <nav class="flex items-center gap-3 text-xs sm:text-sm">
+                    <a href="002.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+                        ◀ Anterior
+                    </a>
+                    <div class="hidden md:flex items-center gap-1">
+                        <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+                        <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+                        <a href="003.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">03</a>
+                        <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+                        <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+                        <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+                        <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+                        <a href="008.html" class="px-2 py-1 rounded-full hover:bg-slate-800">08</a>
+                        <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+                        <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+                        <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+                    </div>
+                    <a href="004.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+                        Próximo ▶
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="flex-1">
+            <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+                <header class="space-y-3">
+                    <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+                        Frontend é a frente de batalha
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base">
+                        Tudo que roda no cliente pode ser inspecionado, alterado e usado contra você.
+                    </p>
+                </header>
+
+                <section class="grid gap-8 md:grid-cols-[3fr,2fr] items-start">
+                    <div class="space-y-3 text-sm sm:text-base">
+                        <ul class="space-y-2">
+                            <li class="flex items-start gap-2">
+                                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+                                <span>Tudo que roda no cliente pode ser inspecionado e <span class="font-semibold">ALTERADO</span>.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+                                <span>Inputs, requests, tokens, feature flags… tudo é mutável no DevTools.</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="mt-1 h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+                                <span>Segurança não é só backend: o front expõe a superfície de ataque.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <aside class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base space-y-3">
+                        <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-400">
+                            Experimento em aula
+                        </h2>
+                        <p class="text-slate-300">
+                            Use o DevTools para brincar com as <span class="font-semibold">feature flags</span> e ver como o front
+                            é facilmente manipulado.
+                        </p>
+                        <div id="demo" class="mt-2 text-slate-100 text-sm sm:text-base"></div>
+                    </aside>
+                </section>
+            </section>
+        </main>
+
+        <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+            Desenvolvimento seguro no frontend — Vinicios Neves
+        </footer>
+    </div>
+    
+    <script>
+        let featureFlags = {
+            premiumFeatures: false,
+            adminPanel: false
+        };
+
+        function verificarAcesso(feature) {
+            if (featureFlags[feature]) {
+                return '✅ Acesso permitido';
+            }
+            return '❌ Acesso negado';
+        }
+
+        // Função que (re)monta o HTML com base nos acessos atuais
+        function atualizarHtmlAcessos() {
+            const demo = document.getElementById('demo');
+            demo.innerHTML = `
+                <div>
+                    <p><strong>Status atual (decidido pelo front):</strong></p>
+                    <p>Premium Features: ${verificarAcesso('premiumFeatures')}</p>
+                    <p>Admin Panel: ${verificarAcesso('adminPanel')}</p>
+                    <p>
+                        💡 Experimento pra fazer em aula (provar que o front não manda em segurança):<br>
+                        1. Abra o DevTools e vá na aba "Console" (F12 ou ⌥⌘I).<br>
+                        <code>featureFlags.adminPanel = true</code><br>
+                        2. Repare que o texto acima muda para "✅ Acesso permitido".<br>
+                        3. Agora imagine se a liberação do painel admin dependesse só disso…
+                    </p>
+                </div>
+            `;
+        }
+
+        // Proxy para reagir automaticamente a mudanças nos acessos
+        featureFlags = new Proxy(featureFlags, {
+            set(target, prop, value) {
+                target[prop] = value;
+                atualizarHtmlAcessos();
+                return true;
+            }
+        });
+
+        // render inicial
+        atualizarHtmlAcessos();
+
+        // expõe para o DevTools (usa o proxy, que já atualiza o HTML)
+        window.featureFlags = featureFlags;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Autenticação e controle de acesso</title>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="min-h-screen flex flex-col">
+    <header class="sticky top-0 z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur">
+      <div class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3">
+        <a href="001.html" class="text-sm font-semibold tracking-tight text-slate-100">
+          Desenvolvimento seguro no frontend
+        </a>
+        <nav class="flex items-center gap-3 text-xs sm:text-sm">
+          <a href="007.html" class="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700">
+            ◀ Anterior
+          </a>
+          <div class="hidden md:flex items-center gap-1">
+            <a href="001.html" class="px-2 py-1 rounded-full hover:bg-slate-800">01</a>
+            <a href="002.html" class="px-2 py-1 rounded-full hover:bg-slate-800">02</a>
+            <a href="003.html" class="px-2 py-1 rounded-full hover:bg-slate-800">03</a>
+            <a href="004.html" class="px-2 py-1 rounded-full hover:bg-slate-800">04</a>
+            <a href="005.html" class="px-2 py-1 rounded-full hover:bg-slate-800">05</a>
+            <a href="006.html" class="px-2 py-1 rounded-full hover:bg-slate-800">06</a>
+            <a href="007.html" class="px-2 py-1 rounded-full hover:bg-slate-800">07</a>
+            <a href="008.html" class="px-2 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold">08</a>
+            <a href="009.html" class="px-2 py-1 rounded-full hover:bg-slate-800">09</a>
+            <a href="010.html" class="px-2 py-1 rounded-full hover:bg-slate-800">10</a>
+            <a href="011.html" class="px-2 py-1 rounded-full hover:bg-slate-800">11</a>
+          </div>
+          <a href="009.html" class="px-3 py-1 rounded-full bg-sky-500 text-slate-950 font-semibold hover:bg-sky-400">
+            Próximo ▶
+          </a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+        <header class="space-y-3">
+          <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+            Autenticação e autorização: o front não manda em nada
+          </h1>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Problema clássico: confiar demais na UI.
+          </p>
+        </header>
+
+        <section class="space-y-4">
+          <div id="auth-demo" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 text-sm sm:text-base"></div>
+          <div class="flex flex-wrap gap-3">
+            <button onclick="tentarComoUsuario()"
+                    class="inline-flex items-center gap-2 rounded-full bg-slate-700 px-4 py-2 text-sm font-semibold text-slate-100 shadow-sm hover:bg-slate-600 cursor-pointer">
+              👤 Tentar como Usuário
+            </button>
+            <button onclick="tentarComoAdmin()"
+                    class="inline-flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm hover:bg-amber-300 cursor-pointer">
+              👑 Tentar como Admin
+            </button>
+            <button onclick="bypassarFrontend()"
+                    class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm hover:bg-rose-400 cursor-pointer">
+              🔓 Bypassar Frontend (curl)
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-800 py-3 text-center text-xs text-slate-500">
+      Desenvolvimento seguro no frontend — Vinicios Neves
+    </footer>
+  </div>
+  
+  <script>
+    // Simulando estado do usuário
+    let currentUser = {
+      id: "123",
+      name: "João Silva",
+      isAdmin: false // Usuário comum
+    };
+    
+    // ✅ Exemplo: Validação real no backend
+    async function fetchAdminData() {
+      try {
+        // Frontend faz requisição, mas validação é no backend
+        const response = await fetch("https://jsonplaceholder.typicode.com/users", {
+          headers: {
+            "Authorization": "Bearer fake-token"
+          }
+        });
+        
+        // Simulando resposta do backend seguro
+        demonstrarBackendSeguro(response.ok);
+        
+      } catch (error) {
+        console.error("Erro:", error);
+      }
+    }
+    
+    function demonstrarBackendSeguro(apiOk) {
+      const demo = document.getElementById('auth-demo');
+      demo.innerHTML = `
+        <div style="background: #e6ffe6; padding: 20px; border-radius: 5px; border: 2px solid green; margin-top: 10px;">
+          <h3>✅ Backend Seguro (Node.js/Express):</h3>
+          <pre style="background: white; padding: 15px; overflow-x: auto;">
+app.get("/api/admin/users", (req, res) => {
+  // ✅ Validação no SERVIDOR
+  const user = req.user; // do token JWT
+  
+  if (!user || !user.roles.includes("admin")) {
+    return res.status(403).json({ 
+      error: "forbidden" 
+    });
+  }
+  
+  // Só executa se for admin
+  const users = db.getAllUsers();
+  res.json(users);
+});</pre>
+          
+          <p style="color: green; font-weight: bold;">
+            ✅ Não importa se o usuário mudou <code>isAdmin</code> no console!<br>
+            O backend verifica o token JWT/session do servidor.
+          </p>
+        </div>
+      `;
+    }
+    
+    function tentarComoUsuario() {
+      currentUser.isAdmin = false;
+      const demo = document.getElementById('auth-demo');
+      demo.innerHTML = `
+        <div style="background: #fff3cd; padding: 20px; border-radius: 5px; border: 2px solid orange; color: #111827;">
+          <h3>👤 Usuário Comum</h3>
+          <p><strong>Nome:</strong> ${currentUser.name}</p>
+          <p><strong>isAdmin:</strong> ${currentUser.isAdmin}</p>
+          <p style="margin-top: 15px; color: #856404;">
+            ❌ Acesso negado ao painel admin (validação frontend)
+          </p>
+          <pre style="background: white; padding: 10px; margin-top: 10px;">
+// 🚨 Código React inseguro
+if (!user.isAdmin) {
+  return &lt;p&gt;Acesso negado&lt;/p&gt;
+}
+return &lt;AdminPanel /&gt;</pre>
+          <p style="color: red; margin-top: 10px;">
+            ⚠️ Mas isso é APENAS cosmético!
+          </p>
+        </div>
+      `;
+    }
+    
+    function tentarComoAdmin() {
+      currentUser.isAdmin = true;
+      const demo = document.getElementById('auth-demo');
+      demo.innerHTML = `
+        <div style="background: #e6ffe6; padding: 20px; border-radius: 5px; border: 2px solid green; color: #111827;">
+          <h3>👑 Administrador</h3>
+          <p><strong>Nome:</strong> ${currentUser.name}</p>
+          <p><strong>isAdmin:</strong> ${currentUser.isAdmin}</p>
+          <p style="margin-top: 15px; color: #155724;">
+            ✅ Painel admin liberado (validação frontend)
+          </p>
+          <p style="margin-top: 15px; background: white; padding: 10px; border-left: 4px solid orange;">
+            ⚠️ Importante: mesmo vendo a UI, o backend DEVE validar cada requisição!
+          </p>
+        </div>
+      `;
+    }
+    
+    function bypassarFrontend() {
+      const demo = document.getElementById('auth-demo');
+      demo.innerHTML = `
+        <div style="background: #2d2d2d; color: white; padding: 20px; border-radius: 5px; border: 2px solid red;">
+          <h3>🔓 Bypassando o Frontend com curl/Postman:</h3>
+          <pre style="background: black; padding: 15px; overflow-x: auto; color: #0f0;">
+# Usuário malicioso ignora o frontend completamente
+curl -X GET https://api.example.com/api/admin/users \\
+  -H "Authorization: Bearer TOKEN_ROUBADO"
+
+# Se o backend não validar:
+# ✅ 200 OK - Dados sensíveis expostos! 🚨
+
+# Se o backend validar corretamente:
+# ❌ 403 Forbidden - Acesso negado ✅</pre>
+          
+          <div style="background: #1a1a1a; padding: 15px; margin-top: 15px; border-radius: 5px;">
+            <p style="color: #ff6b6b; font-weight: bold;">💀 ATAQUE BEM-SUCEDIDO se o backend não validar!</p>
+            <p style="color: #ccc; margin-top: 10px;">
+              O atacante:
+            </p>
+            <ol style="color: #aaa;">
+              <li>Ignora completamente a UI do frontend</li>
+              <li>Chama a API diretamente (curl, Postman, código)</li>
+              <li>Consegue dados mesmo sem ser admin</li>
+            </ol>
+          </div>
+          
+          <div style="background: #1a1a1a; padding: 15px; margin-top: 15px; border-radius: 5px; border-left: 4px solid #6fbf73;">
+            <p style="color: #6fbf73; font-weight: bold;">✅ DEFESA: Validação no backend</p>
+            <pre style="color: #0f0; margin-top: 10px;">
+// Middleware de autenticação
+function requireAdmin(req, res, next) {
+  const token = req.headers.authorization;
+  const user = verifyToken(token);
+  
+  if (!user?.roles.includes('admin')) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+  
+  req.user = user;
+  next();
+}
+
+app.get('/api/admin/users', requireAdmin, getUsers);</pre>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Estado inicial
+    document.getElementById('auth-demo').innerHTML = `
+      <div style="background: #f0f0f0; padding: 20px; border-radius: 5px; color: #111827;">
+        <h3 style="margin-top: 0;">💡 Demonstração Interativa</h3>
+        <p><strong>Por que não confiar apenas no frontend:</strong></p>
+        <ul style="line-height: 1.8;">
+          <li>👤 Veja como validação frontend é apenas cosmética</li>
+          <li>🔓 Como um atacante bypassa a UI usando curl/Postman</li>
+          <li>✅ Como proteger com validação real no backend</li>
+        </ul>
+        <p style="margin-top: 15px; background: #fff3cd; padding: 12px; border-radius: 5px; border-left: 4px solid orange;">
+          <strong>Mantra:</strong> Frontend esconde, backend bloqueia!
+        </p>
+      </div>
+    `;
+    
+    // Expor no console para demonstração
+    window.currentUser = currentUser;
+  </script>
+
+  <p>Resumo: frontend só esconde, backend é quem realmente bloqueia.</p>
+</body>
+</html>
